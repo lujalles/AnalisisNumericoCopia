@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método de Newton-Raphson</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- MathJax para fórmulas matemáticas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --accent-color: #3498db;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(46, 204, 113, 0.7) 0%, rgba(39, 174, 96, 0.7) 100%);
+            z-index: 0;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+            color: white;
+        }
+
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-title {
+            color: var(--dark-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(46, 204, 113, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .method-info {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        .method-info h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .method-info p {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .formula {
+            background-color: var(--light-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .example {
+            background-color: rgba(46, 204, 113, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .example h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            width: 100%;
+            margin-top: 50px;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animated {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Tooltip personalizado */
+        .custom-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .custom-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .custom-tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--dark-color) transparent transparent transparent;
+        }
+
+        .custom-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .form-container, .method-info {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="/" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="header-content">
+            <h1>Método de Newton-Raphson</h1>
+            <p>Una técnica numérica de convergencia cuadrática para encontrar raíces de funciones</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <!-- Formulario -->
+            <div class="col-lg-6 mb-4 animated" style="animation-delay: 0.1s;">
+                <div class="form-container">
+                    <h2 class="form-title">
+                        <i class="fas fa-calculator me-2"></i>Calculadora de Newton-Raphson
+                    </h2>
+
+                    <form id="newtonForm" action="/calcular" method="POST">
+                        <div class="form-group">
+                            <label for="funcion" class="form-label">Función f(x):</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-function"></i>f(x) =</span>
+                                <input type="text" class="form-control" id="funcion" name="funcion" placeholder="Ej: x^2-4" required>
+                                <span class="input-group-text custom-tooltip">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="tooltip-text">Ingresa la función usando x como variable. Ej: x^2-4, sin(x), e^x, etc.</span>
+                                </span>
+                            </div>
+                            <small class="text-muted">Usa x como variable, ^ para potencias, sin(), cos(), tan(), e^x, etc.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="derivada" class="form-label">Derivada f'(x):</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-function"></i>f'(x) =</span>
+                                <input type="text" class="form-control" id="derivada" name="derivada" placeholder="Ej: 2*x" required>
+                                <span class="input-group-text custom-tooltip">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="tooltip-text">Ingresa la derivada de la función. Ej: Si f(x)=x^2-4, entonces f'(x)=2*x</span>
+                                </span>
+                            </div>
+                            <small class="text-muted">Ingresa la derivada de la función con respecto a x.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="x0" class="form-label">Valor inicial (x₀):</label>
+                            <div class="input-group">
+                                <input type="number" step="any" class="form-control" id="x0" name="x0" required>
+                                <span class="input-group-text custom-tooltip">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="tooltip-text">Punto inicial desde donde comenzará la iteración. Debe estar cerca de la raíz para una convergencia rápida.</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tolerancia" class="form-label">Tolerancia (error):</label>
+                            <div class="input-group">
+                                <input type="number" step="any" class="form-control" id="tolerancia" name="tolerancia" placeholder="Ej: 0.0001" required>
+                                <span class="input-group-text custom-tooltip">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="tooltip-text">Error máximo permitido para detener las iteraciones. Valores típicos: 0.0001, 0.00001</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="max_iter" class="form-label">Máximo de iteraciones:</label>
+                            <input type="number" class="form-control" id="max_iter" name="max_iter" value="100" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="x_min" class="form-label">Inicio del gráfico (x_min):</label>
+                                    <input type="number" step="any" class="form-control" id="x_min" name="x_min" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="x_max" class="form-label">Fin del gráfico (x_max):</label>
+                                    <input type="number" step="any" class="form-control" id="x_max" name="x_max" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-file-pdf me-2"></i>Generar PDF
+                            </button>
+                            <button type="button" id="calcularBtn" class="btn btn-outline-primary">
+                                <i class="fas fa-calculator me-2"></i>Calcular sin generar PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Información del método -->
+            <div class="col-lg-6 animated" style="animation-delay: 0.3s;">
+                <div class="method-info">
+                    <h3><i class="fas fa-info-circle me-2"></i>Sobre el Método de Newton-Raphson</h3>
+
+                    <p>El método de Newton-Raphson es una técnica numérica poderosa para encontrar raíces de funciones diferenciables. A diferencia de los métodos de bisección y regula falsi, este método utiliza la <strong>derivada de la función</strong> para aproximarse rápidamente a la raíz, logrando una <strong>convergencia cuadrática</strong> en la mayoría de los casos.</p>
+
+                    <div class="formula">
+                        <p>La fórmula iterativa del método de Newton-Raphson es:</p>
+                        <p>\[ x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)} \]</p>
+                    </div>
+
+                    <p>El algoritmo funciona de la siguiente manera:</p>
+                    <ol>
+                        <li>Se elige un valor inicial $$x_0$$ cercano a la raíz.</li>
+                        <li>Se calcula la tangente a la curva en el punto $$(x_0, f(x_0))$$.</li>
+                        <li>Se encuentra el punto $$x_1$$ donde esta tangente cruza el eje x.</li>
+                        <li>Se repite el proceso usando $$x_1$$ como nuevo punto, obteniendo $$x_2$$, y así sucesivamente.</li>
+                        <li>El proceso continúa hasta que el error sea menor que la tolerancia especificada o se alcance el número máximo de iteraciones.</li>
+                    </ol>
+
+                    <div class="example">
+                        <h4>Ejemplo</h4>
+                        <p>Para encontrar una raíz de f(x) = x² - 4 usando el método de Newton-Raphson:</p>
+                        <ul>
+                            <li>La derivada es f'(x) = 2x</li>
+                            <li>Si elegimos x₀ = 3 como valor inicial:</li>
+                            <li>x₁ = 3 - (3² - 4)/(2·3) = 3 - 5/6 = 2.167</li>
+                            <li>x₂ = 2.167 - (2.167² - 4)/(2·2.167) = 2.014</li>
+                            <li>x₃ = 2.014 - (2.014² - 4)/(2·2.014) = 2.000</li>
+                            <li>La raíz es x = 2, que se alcanza en pocas iteraciones.</li>
+                        </ul>
+                    </div>
+
+                    <p><strong>Ventajas:</strong></p>
+                    <ul>
+                        <li>Convergencia cuadrática (muy rápida) cuando está cerca de la raíz</li>
+                        <li>No requiere que la función cambie de signo en un intervalo</li>
+                        <li>Puede encontrar raíces complejas con la implementación adecuada</li>
+                    </ul>
+
+                    <p><strong>Desventajas:</strong></p>
+                    <ul>
+                        <li>Requiere conocer la derivada de la función</li>
+                        <li>Puede diverger si el valor inicial está lejos de la raíz</li>
+                        <li>Problemas cuando f'(x) se acerca a cero (pendiente casi horizontal)</li>
+                        <li>No garantiza convergencia en todos los casos</li>
+                    </ul>
+
+                    <div class="mt-4">
+                        <p><strong>Interpretación geométrica:</strong></p>
+                        <p>Geométricamente, el método de Newton-Raphson encuentra la intersección de la tangente a la curva en el punto actual con el eje x. Esta intersección se convierte en la siguiente aproximación de la raíz. Este proceso se repite hasta alcanzar la precisión deseada.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultados -->
+        <div class="row mt-4">
+            <div class="col-12 animated" style="animation-delay: 0.5s;">
+                <div id="resultadosContainer" class="form-container" style="display: none;">
+                    <h2 class="form-title">
+                        <i class="fas fa-chart-line me-2"></i>Resultados
+                    </h2>
+                    <div id="resultados"></div>
+                    <div class="mt-4">
+                        <canvas id="grafico" width="100%" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2023 Métodos Matemáticos | Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Math.js para evaluación de funciones matemáticas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Referencias a elementos del DOM
+            const form = document.getElementById('newtonForm');
+            const calcularBtn = document.getElementById('calcularBtn');
+            const resultadosContainer = document.getElementById('resultadosContainer');
+            const resultadosDiv = document.getElementById('resultados');
+
+            // Función para evaluar la función matemática
+            function evaluarFuncion(expr, x) {
+                try {
+                    // Reemplazar ^ por ** para potencias
+                    const exprJS = expr.replace(/\^/g, '**');
+                    // Crear un scope con el valor de x
+                    const scope = { x: x };
+                    // Evaluar la expresión
+                    return math.evaluate(exprJS, scope);
+                } catch (error) {
+                    console.error("Error al evaluar la función:", error);
+                    return NaN;
+                }
+            }
+
+            // Método de Newton-Raphson
+            function newtonRaphson(funcion, derivada, x0, tolerancia, maxIter) {
+                let iteraciones = [];
+                let x = x0;
+                let error = Infinity;
+                let i = 0;
+                let fx, dfx, x_nuevo;
+
+                do {
+                    // Evaluar función y derivada en x
+                    fx = evaluarFuncion(funcion, x);
+                    dfx = evaluarFuncion(derivada, x);
+
+                    // Verificar si la derivada es cercana a cero
+                    if (Math.abs(dfx) < 1e-10) {
+                        return {
+                            exito: false,
+                            mensaje: "La derivada es cercana a cero en x = " + x.toFixed(6) + ". El método no puede continuar.",
+                            iteraciones: iteraciones
+                        };
+                    }
+
+                    // Calcular siguiente aproximación
+                    x_nuevo = x - fx / dfx;
+
+                    // Calcular error relativo
+                    error = Math.abs((x_nuevo - x) / x_nuevo);
+
+                    // Guardar datos de la iteración
+                    iteraciones.push({
+                        i: i + 1,
+                        x: x,
+                        fx: fx,
+                        dfx: dfx,
+                        x_nuevo: x_nuevo,
+                        error: error
+                    });
+
+                    // Actualizar x para la siguiente iteración
+                    x = x_nuevo;
+                    i++;
+
+                } while (i < maxIter && error > tolerancia && Math.abs(fx) > 1e-10);
+
+                // Verificar si se alcanzó la convergencia
+                if (i >= maxIter && error > tolerancia) {
+                    return {
+                        exito: false,
+                        mensaje: "Se alcanzó el número máximo de iteraciones sin convergencia.",
+                        iteraciones: iteraciones,
+                        raiz: x
+                    };
+                }
+
+                return {
+                    exito: true,
+                    raiz: x,
+                    error: error,
+                    iteraciones: iteraciones,
+                    mensaje: "Raíz encontrada después de " + i + " iteraciones."
+                };
+            }
+
+            // Función para generar puntos para el gráfico
+            function generarPuntosGrafico(funcion, xMin, xMax, numPuntos = 100) {
+                const puntos = [];
+                const paso = (xMax - xMin) / numPuntos;
+
+                for (let i = 0; i <= numPuntos; i++) {
+                    const x = xMin + i * paso;
+                    const y = evaluarFuncion(funcion, x);
+                    puntos.push({ x, y });
+                }
+
+                return puntos;
+            }
+
+            // Función para crear el gráfico
+            function crearGrafico(funcion, derivada, xMin, xMax, iteraciones, raiz = null) {
+                const ctx = document.getElementById('grafico').getContext('2d');
+
+                // Generar puntos para la función y su derivada
+                const puntosFuncion = generarPuntosGrafico(funcion, xMin, xMax);
+                const puntosDerivada = generarPuntosGrafico(derivada, xMin, xMax);
+
+                // Filtrar puntos con valores y muy grandes para mejor visualización
+                const puntosFuncionValidos = puntosFuncion.filter(p => !isNaN(p.y) && Math.abs(p.y) < 100);
+                const puntosDerivadaValidos = puntosDerivada.filter(p => !isNaN(p.y) && Math.abs(p.y) < 100);
+
+                // Datos para el gráfico
+                const data = {
+                    datasets: [
+                        {
+                            label: 'f(x)',
+                            data: puntosFuncionValidos,
+                            borderColor: '#2ecc71',
+                            backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: false
+                        },
+                        {
+                            label: 'f\'(x)',
+                            data: puntosDerivadaValidos,
+                            borderColor: '#3498db',
+                            borderWidth: 1,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                };
+
+                // Si hay una raíz, añadirla al gráfico
+                if (raiz !== null) {
+                    data.datasets.push({
+                        label: 'Raíz',
+                        data: [{ x: raiz, y: 0 }],
+                        backgroundColor: '#e74c3c',
+                        borderColor: '#e74c3c',
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        showLine: false
+                    });
+                }
+
+                // Añadir las iteraciones al gráfico (primeras 3 o menos)
+                const numIteracionesMostrar = Math.min(3, iteraciones.length);
+
+                for (let i = 0; i < numIteracionesMostrar; i++) {
+                    const iter = iteraciones[i];
+
+                    // Punto actual (x_i, f(x_i))
+                    data.datasets.push({
+                        label: `Iteración ${iter.i}: (x_${iter.i-1}, f(x_${iter.i-1}))`,
+                        data: [{ x: iter.x, y: iter.fx }],
+                        backgroundColor: getIterationColor(i),
+                        borderColor: getIterationColor(i),
+                        pointRadius: 5,
+                        pointStyle: 'circle',
+                        showLine: false
+                    });
+
+                    // Línea tangente
+                    const x1 = iter.x - 1;
+                    const y1 = iter.fx - iter.dfx * 1;
+                    const x2 = iter.x + 1;
+                    const y2 = iter.fx + iter.dfx * 1;
+
+                    data.datasets.push({
+                        label: `Tangente en x_${iter.i-1}`,
+                        data: [
+                            { x: x1, y: y1 },
+                            { x: x2, y: y2 }
+                        ],
+                        borderColor: getIterationColor(i),
+                        borderWidth: 1,
+                        borderDash: [3, 3],
+                        pointRadius: 0,
+                        fill: false
+                    });
+
+                    // Punto de intersección con el eje x (x_{i+1})
+                    data.datasets.push({
+                        label: `Próximo punto x_${iter.i}`,
+                        data: [{ x: iter.x_nuevo, y: 0 }],
+                        backgroundColor: getIterationColor(i, true),
+                        borderColor: getIterationColor(i, true),
+                        pointRadius: 5,
+                        pointStyle: 'triangle',
+                        showLine: false
+                    });
+                }
+
+                // Función para obtener colores para las iteraciones
+                function getIterationColor(index, variant = false) {
+                    const colors = [
+                        variant ? '#9b59b6' : '#8e44ad',
+                        variant ? '#f39c12' : '#d35400',
+                        variant ? '#1abc9c' : '#16a085'
+                    ];
+                    return colors[index % colors.length];
+                }
+
+                // Configuración del gráfico
+                const config = {
+                    type: 'scatter',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Método de Newton-Raphson: f(x) = ' + funcion
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `(${context.parsed.x.toFixed(4)}, ${context.parsed.y.toFixed(4)})`;
+                                    }
+                                }
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: 'x'
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'f(x)'
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            }
+                        }
+                    }
+                };
+
+                // Crear el gráfico
+                return new Chart(ctx, config);
+            }
+
+            // Función para mostrar los resultados
+            function mostrarResultados(resultado, funcion, derivada, xMin, xMax) {
+                resultadosContainer.style.display = 'block';
+
+                if (!resultado.exito) {
+                    resultadosDiv.innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>${resultado.mensaje}
+                        </div>
+                    `;
+                    // Si hay iteraciones, mostrarlas aunque no haya convergido
+                    if (resultado.iteraciones && resultado.iteraciones.length > 0) {
+                        mostrarTablaIteraciones(resultado, funcion);
+                        crearGrafico(funcion, derivada, xMin, xMax, resultado.iteraciones, resultado.raiz);
+                    }
+                    return;
+                }
+
+                // Mostrar resultado y tabla de iteraciones
+                mostrarTablaIteraciones(resultado, funcion);
+
+                // Crear gráfico
+                crearGrafico(funcion, derivada, xMin, xMax, resultado.iteraciones, resultado.raiz);
+
+                // Desplazarse a los resultados
+                resultadosContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // Función para mostrar la tabla de iteraciones
+            function mostrarTablaIteraciones(resultado, funcion) {
+                let mensajeHTML = `
+                    <div class="alert ${resultado.exito ? 'alert-success' : 'alert-warning'}">
+                        <i class="fas ${resultado.exito ? 'fa-check-circle' : 'fa-exclamation-triangle'} me-2"></i>${resultado.mensaje}
+                        ${resultado.raiz ? `
+                        <br>
+                        <strong>Raíz aproximada:</strong> ${resultado.raiz.toFixed(6)}
+                        <br>
+                        <strong>Error relativo:</strong> ${resultado.error !== null ? resultado.error.toFixed(6) : 'N/A'}
+                        <br>
+                        <strong>f(raíz):</strong> ${evaluarFuncion(funcion, resultado.raiz).toFixed(10)}
+                        ` : ''}
+                    </div>
+                `;
+
+                // Crear tabla de iteraciones
+                let tablaHTML = `
+                    <h4 class="mt-4 mb-3">Tabla de iteraciones</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Iteración</th>
+                                    <th>x_i</th>
+                                    <th>f(x_i)</th>
+                                    <th>f'(x_i)</th>
+                                    <th>x_{i+1}</th>
+                                    <th>Error</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                // Añadir filas de iteraciones
+                resultado.iteraciones.forEach(iter => {
+                    tablaHTML += `
+                        <tr>
+                            <td>${iter.i}</td>
+                            <td>${iter.x.toFixed(6)}</td>
+                            <td>${iter.fx.toFixed(6)}</td>
+                            <td>${iter.dfx.toFixed(6)}</td>
+                            <td>${iter.x_nuevo.toFixed(6)}</td>
+                            <td>${iter.error !== null ? iter.error.toFixed(6) : 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+
+                tablaHTML += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                resultadosDiv.innerHTML = mensajeHTML + tablaHTML;
+            }
+
+            // Evento para calcular sin generar PDF
+            calcularBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Obtener valores del formulario
+                const funcion = document.getElementById('funcion').value;
+                const derivada = document.getElementById('derivada').value;
+                const x0 = parseFloat(document.getElementById('x0').value);
+                const tolerancia = parseFloat(document.getElementById('tolerancia').value);
+                const maxIter = parseInt(document.getElementById('max_iter').value);
+                const xMin = parseFloat(document.getElementById('x_min').value);
+                const xMax = parseFloat(document.getElementById('x_max').value);
+
+                // Validar entrada
+                if (isNaN(x0) || isNaN(tolerancia) || isNaN(maxIter) || isNaN(xMin) || isNaN(xMax)) {
+                    alert('Por favor, complete todos los campos con valores numéricos válidos.');
+                    return;
+                }
+
+                // Ejecutar método de Newton-Raphson
+                const resultado = newtonRaphson(funcion, derivada, x0, tolerancia, maxIter);
+
+                // Mostrar resultados
+                mostrarResultados(resultado, funcion, derivada, xMin, xMax);
+            });
+
+            // Sugerir valores iniciales para el ejemplo
+            document.getElementById('funcion').value = 'x^2-4';
+            document.getElementById('derivada').value = '2*x';
+            document.getElementById('x0').value = '3';
+            document.getElementById('tolerancia').value = '0.0001';
+            document.getElementById('max_iter').value = '100';
+            document.getElementById('x_min').value = '0';
+            document.getElementById('x_max').value = '4';
+        });
+    </script>
+</body>
+</html>

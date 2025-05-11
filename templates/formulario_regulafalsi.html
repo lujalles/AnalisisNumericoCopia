@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método de Regula Falsi</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- MathJax para fórmulas matemáticas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color: #c0392b;
+            --accent-color: #3498db;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(231, 76, 60, 0.7) 0%, rgba(192, 57, 43, 0.7) 100%);
+            z-index: 0;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+            color: white;
+        }
+
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-title {
+            color: var(--dark-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(231, 76, 60, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .method-info {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        .method-info h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .method-info p {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .formula {
+            background-color: var(--light-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .example {
+            background-color: rgba(231, 76, 60, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .example h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            width: 100%;
+            margin-top: 50px;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animated {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Tooltip personalizado */
+        .custom-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .custom-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .custom-tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--dark-color) transparent transparent transparent;
+        }
+
+        .custom-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .form-container, .method-info {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="index.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="header-content">
+            <h1>Método de Regula Falsi</h1>
+            <p>Una técnica numérica de interpolación lineal para encontrar raíces de funciones</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <!-- Formulario -->
+            <div class="col-lg-6 mb-4 animated" style="animation-delay: 0.1s;">
+                <div class="form-container">
+                    <h2 class="form-title">
+                        <i class="fas fa-ruler me-2"></i>Calculadora de Regula Falsi
+                    </h2>
+
+                    <form id="regulaFalsiForm" action="/regulafalsi_final" method="post">
+                        <div class="form-group">
+                            <label for="f" class="form-label">Función (f(x)):</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-function"></i>f(x) =</span>
+                                <input type="text" class="form-control" id="f" name="f" placeholder="Ej: x^3-2*x-5" required>
+                                <span class="input-group-text custom-tooltip">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="tooltip-text">Ingresa la función usando x como variable. Ej: x^3-2*x-5, sin(x), e^x, etc.</span>
+                                </span>
+                            </div>
+                            <small class="text-muted">Usa x como variable, ^ para potencias, sin(), cos(), tan(), e^x, etc.</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="a" class="form-label">Límite inferior (a):</label>
+                                    <input type="number" step="any" class="form-control" id="a" name="a" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="b" class="form-label">Límite superior (b):</label>
+                                    <input type="number" step="any" class="form-control" id="b" name="b" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="es" class="form-label">Error tolerado (es):</label>
+                            <div class="input-group">
+                                <input type="number" step="any" class="form-control" id="es" name="es" placeholder="Ej: 0.0001" required>
+                                <span class="input-group-text custom-tooltip">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="tooltip-text">Error máximo permitido para detener las iteraciones. Valores típicos: 0.0001, 0.00001</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="imax" class="form-label">Máximo de iteraciones (imax):</label>
+                            <input type="number" class="form-control" id="imax" name="imax" value="100" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="xi" class="form-label">Inicio del gráfico (xi):</label>
+                                    <input type="number" step="any" class="form-control" id="xi" name="xi" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="xf" class="form-label">Fin del gráfico (xf):</label>
+                                    <input type="number" step="any" class="form-control" id="xf" name="xf" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-file-pdf me-2"></i>Generar PDF
+                            </button>
+                            <button type="button" id="calcularBtn" class="btn btn-outline-primary">
+                                <i class="fas fa-calculator me-2"></i>Calcular sin generar PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Información del método -->
+            <div class="col-lg-6 animated" style="animation-delay: 0.3s;">
+                <div class="method-info">
+                    <h3><i class="fas fa-info-circle me-2"></i>Sobre el Método de Regula Falsi</h3>
+
+                    <p>El método de Regula Falsi (o método de la posición falsa) es una técnica numérica para encontrar raíces de funciones continuas. Es una mejora del método de bisección, ya que utiliza <strong>interpolación lineal</strong> para estimar la raíz, lo que generalmente resulta en una convergencia más rápida.</p>
+
+                    <div class="formula">
+                        <p>La fórmula para calcular el punto de intersección con el eje x es:</p>
+                        <p>\[ c = b - \frac{f(b) \cdot (b - a)}{f(b) - f(a)} \]</p>
+                    </div>
+
+                    <p>El algoritmo funciona de la siguiente manera:</p>
+                    <ol>
+                        <li>Se elige un intervalo inicial [a, b] donde f(a) y f(b) tienen signos opuestos.</li>
+                        <li>Se calcula el punto c donde la línea que conecta (a, f(a)) y (b, f(b)) cruza el eje x.</li>
+                        <li>Si f(c) = 0 o el error es menor que la tolerancia, se ha encontrado la raíz.</li>
+                        <li>Si f(c) tiene el mismo signo que f(a), entonces la raíz está en [c, b], por lo que a = c.</li>
+                        <li>Si f(c) tiene el mismo signo que f(b), entonces la raíz está en [a, c], por lo que b = c.</li>
+                        <li>Se repiten los pasos 2-5 hasta encontrar la raíz o alcanzar el número máximo de iteraciones.</li>
+                    </ol>
+
+                    <div class="example">
+                        <h4>Ejemplo</h4>
+                        <p>Para encontrar una raíz de f(x) = x³ - 2x - 5 en el intervalo [2, 3]:</p>
+                        <ul>
+                            <li>f(2) = 2³ - 2(2) - 5 = 8 - 4 - 5 = -1 (negativo)</li>
+                            <li>f(3) = 3³ - 2(3) - 5 = 27 - 6 - 5 = 16 (positivo)</li>
+                            <li>Como f(2) y f(3) tienen signos opuestos, existe una raíz en [2, 3].</li>
+                            <li>Aplicando el método de Regula Falsi, encontraremos que la raíz es aproximadamente x ≈ 2.0946.</li>
+                        </ul>
+                    </div>
+
+                    <p><strong>Ventajas sobre el método de bisección:</strong></p>
+                    <ul>
+                        <li>Convergencia generalmente más rápida</li>
+                        <li>Utiliza información sobre los valores de la función, no solo sus signos</li>
+                        <li>Especialmente eficiente cuando la función es casi lineal</li>
+                    </ul>
+
+                    <p><strong>Desventajas:</strong></p>
+                    <ul>
+                        <li>Puede converger lentamente si la función tiene curvatura significativa</li>
+                        <li>Requiere que la función cambie de signo en el intervalo</li>
+                        <li>En algunos casos, uno de los extremos del intervalo puede permanecer fijo durante muchas iteraciones</li>
+                    </ul>
+
+                    <div class="mt-4">
+                        <p><strong>Comparación con otros métodos:</strong></p>
+                        <p>El método de Regula Falsi es un punto intermedio entre el método de bisección (robusto pero lento) y el método de Newton-Raphson (rápido pero requiere derivadas). Es una buena opción cuando se necesita una convergencia más rápida que la bisección pero no se dispone de la derivada de la función.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultados -->
+        <div class="row mt-4">
+            <div class="col-12 animated" style="animation-delay: 0.5s;">
+                <div id="resultadosContainer" class="form-container" style="display: none;">
+                    <h2 class="form-title">
+                        <i class="fas fa-chart-line me-2"></i>Resultados
+                    </h2>
+                    <div id="resultados"></div>
+                    <div class="mt-4">
+                        <canvas id="grafico" width="100%" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2023 Métodos Matemáticos | Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Math.js para evaluación de funciones matemáticas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Referencias a elementos del DOM
+            const form = document.getElementById('regulaFalsiForm');
+            const calcularBtn = document.getElementById('calcularBtn');
+            const resultadosContainer = document.getElementById('resultadosContainer');
+            const resultadosDiv = document.getElementById('resultados');
+
+            // Función para evaluar la función matemática
+            function evaluarFuncion(expr, x) {
+                try {
+                    // Reemplazar ^ por ** para potencias
+                    const exprJS = expr.replace(/\^/g, '**');
+                    // Crear un scope con el valor de x
+                    const scope = { x: x };
+                    // Evaluar la expresión
+                    return math.evaluate(exprJS, scope);
+                } catch (error) {
+                    console.error("Error al evaluar la función:", error);
+                    return NaN;
+                }
+            }
+
+            // Método de Regula Falsi
+            function regulaFalsi(funcion, a, b, es, imax) {
+                let iteraciones = [];
+                let i = 0;
+                let c, fa, fb, fc, error;
+
+                // Evaluar la función en los extremos
+                fa = evaluarFuncion(funcion, a);
+                fb = evaluarFuncion(funcion, b);
+
+                // Verificar si hay un cambio de signo
+                if (fa * fb >= 0) {
+                    return {
+                        exito: false,
+                        mensaje: "No se puede garantizar una raíz en el intervalo [" + a + ", " + b + "] porque f(a) y f(b) no tienen signos opuestos.",
+                        iteraciones: []
+                    };
+                }
+
+                // Valor inicial de c para calcular el error en la primera iteración
+                let c_anterior = a;
+
+                // Iteraciones del método
+                do {
+                    // Calcular punto de intersección con el eje x (Regula Falsi)
+                    c = b - (fb * (b - a)) / (fb - fa);
+                    fc = evaluarFuncion(funcion, c);
+
+                    // Calcular error relativo
+                    error = Math.abs((c - c_anterior) / c);
+                    c_anterior = c;
+
+                    // Guardar datos de la iteración
+                    iteraciones.push({
+                        i: i + 1,
+                        a: a,
+                        b: b,
+                        c: c,
+                        fa: fa,
+                        fb: fb,
+                        fc: fc,
+                        error: error
+                    });
+
+                    // Actualizar intervalo
+                    if (fa * fc < 0) {
+                        b = c;
+                        fb = fc;
+                    } else {
+                        a = c;
+                        fa = fc;
+                    }
+
+                    i++;
+                } while (i < imax && error > es && Math.abs(fc) > 1e-15);
+
+                return {
+                    exito: true,
+                    raiz: c,
+                    error: error,
+                    iteraciones: iteraciones,
+                    mensaje: "Raíz encontrada después de " + i + " iteraciones."
+                };
+            }
+
+            // Función para generar puntos para el gráfico
+            function generarPuntosGrafico(funcion, xi, xf, numPuntos = 100) {
+                const puntos = [];
+                const paso = (xf - xi) / numPuntos;
+
+                for (let i = 0; i <= numPuntos; i++) {
+                    const x = xi + i * paso;
+                    const y = evaluarFuncion(funcion, x);
+                    puntos.push({ x, y });
+                }
+
+                return puntos;
+            }
+
+            // Función para crear el gráfico
+            function crearGrafico(funcion, xi, xf, raiz = null, iteraciones = null) {
+                const ctx = document.getElementById('grafico').getContext('2d');
+                const puntos = generarPuntosGrafico(funcion, xi, xf);
+
+                // Filtrar puntos con valores y muy grandes para mejor visualización
+                const puntosValidos = puntos.filter(p => !isNaN(p.y) && Math.abs(p.y) < 100);
+
+                // Datos para el gráfico
+                const data = {
+                    datasets: [
+                        {
+                            label: 'f(x)',
+                            data: puntosValidos,
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                };
+
+                // Si hay una raíz, añadirla al gráfico
+                if (raiz !== null) {
+                    data.datasets.push({
+                        label: 'Raíz',
+                        data: [{ x: raiz, y: 0 }],
+                        backgroundColor: '#3498db',
+                        borderColor: '#3498db',
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        showLine: false
+                    });
+                }
+
+                // Si hay iteraciones, añadir líneas de interpolación para las primeras 3 iteraciones
+                if (iteraciones && iteraciones.length > 0) {
+                    const numIteracionesMostrar = Math.min(3, iteraciones.length);
+
+                    for (let i = 0; i < numIteracionesMostrar; i++) {
+                        const iter = iteraciones[i];
+
+                        // Puntos para la línea de interpolación
+                        const puntosLinea = [
+                            { x: iter.a, y: iter.fa },
+                            { x: iter.b, y: iter.fb }
+                        ];
+
+                        data.datasets.push({
+                            label: `Interpolación (iter ${iter.i})`,
+                            data: puntosLinea,
+                            borderColor: getInterpolationColor(i),
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 3,
+                            fill: false
+                        });
+
+                        // Punto de intersección con el eje x
+                        data.datasets.push({
+                            label: `c${iter.i}`,
+                            data: [{ x: iter.c, y: 0 }],
+                            backgroundColor: getInterpolationColor(i),
+                            borderColor: getInterpolationColor(i),
+                            pointRadius: 4,
+                            pointStyle: 'circle',
+                            showLine: false
+                        });
+                    }
+                }
+
+                // Función para obtener colores para las líneas de interpolación
+                function getInterpolationColor(index) {
+                    const colors = ['#9b59b6', '#2ecc71', '#f39c12'];
+                    return colors[index % colors.length];
+                }
+
+                // Configuración del gráfico
+                const config = {
+                    type: 'scatter',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Gráfico de la función f(x) = ' + funcion
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `(${context.parsed.x.toFixed(4)}, ${context.parsed.y.toFixed(4)})`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: 'x'
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'f(x)'
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            }
+                        }
+                    }
+                };
+
+                // Crear el gráfico
+                return new Chart(ctx, config);
+            }
+
+            // Función para mostrar los resultados
+            function mostrarResultados(resultado, funcion, xi, xf) {
+                resultadosContainer.style.display = 'block';
+
+                if (!resultado.exito) {
+                    resultadosDiv.innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>${resultado.mensaje}
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Crear tabla de iteraciones
+                let tablaHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>${resultado.mensaje}
+                        <br>
+                        <strong>Raíz aproximada:</strong> ${resultado.raiz.toFixed(6)}
+                        <br>
+                        <strong>Error relativo:</strong> ${resultado.error !== null ? resultado.error.toFixed(6) : 'N/A'}
+                        <br>
+                        <strong>f(raíz):</strong> ${evaluarFuncion(funcion, resultado.raiz).toFixed(10)}
+                    </div>
+
+                    <h4 class="mt-4 mb-3">Tabla de iteraciones</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Iteración</th>
+                                    <th>a</th>
+                                    <th>b</th>
+                                    <th>c</th>
+                                    <th>f(a)</th>
+                                    <th>f(b)</th>
+                                    <th>f(c)</th>
+                                    <th>Error</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                // Añadir filas de iteraciones
+                resultado.iteraciones.forEach(iter => {
+                    tablaHTML += `
+                        <tr>
+                            <td>${iter.i}</td>
+                            <td>${iter.a.toFixed(6)}</td>
+                            <td>${iter.b.toFixed(6)}</td>
+                            <td>${iter.c.toFixed(6)}</td>
+                            <td>${iter.fa.toFixed(6)}</td>
+                            <td>${iter.fb.toFixed(6)}</td>
+                            <td>${iter.fc.toFixed(6)}</td>
+                            <td>${iter.error !== null ? iter.error.toFixed(6) : 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+
+                tablaHTML += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                resultadosDiv.innerHTML = tablaHTML;
+
+                // Crear gráfico
+                crearGrafico(funcion, xi, xf, resultado.raiz, resultado.iteraciones);
+
+                // Desplazarse a los resultados
+                resultadosContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // Evento para calcular sin generar PDF
+            calcularBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Obtener valores del formulario
+                const funcion = document.getElementById('f').value;
+                const a = parseFloat(document.getElementById('a').value);
+                const b = parseFloat(document.getElementById('b').value);
+                const es = parseFloat(document.getElementById('es').value);
+                const imax = parseInt(document.getElementById('imax').value);
+                const xi = parseFloat(document.getElementById('xi').value);
+                const xf = parseFloat(document.getElementById('xf').value);
+
+                // Validar entrada
+                if (isNaN(a) || isNaN(b) || isNaN(es) || isNaN(imax) || isNaN(xi) || isNaN(xf)) {
+                    alert('Por favor, complete todos los campos con valores numéricos válidos.');
+                    return;
+                }
+
+                // Ejecutar método de Regula Falsi
+                const resultado = regulaFalsi(funcion, a, b, es, imax);
+
+                // Mostrar resultados
+                mostrarResultados(resultado, funcion, xi, xf);
+            });
+
+            // Sugerir valores iniciales para el ejemplo
+            document.getElementById('f').value = 'x^3-2*x-5';
+            document.getElementById('a').value = '2';
+            document.getElementById('b').value = '3';
+            document.getElementById('es').value = '0.0001';
+            document.getElementById('imax').value = '100';
+            document.getElementById('xi').value = '1';
+            document.getElementById('xf').value = '4';
+        });
+    </script>
+</body>
+</html>
+

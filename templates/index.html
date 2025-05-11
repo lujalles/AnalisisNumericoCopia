@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagina Principal</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        .header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(52, 152, 219, 0.7) 0%, rgba(41, 128, 185, 0.7) 100%);
+            z-index: 0;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .method-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .method-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .method-card:hover .card-icon {
+            transform: scale(1.1);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background-color: white;
+            border-radius: 50% 50% 0 0;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .card-body {
+            padding: 25px;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+
+        .card-text {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        .btn-method {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-method:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.05);
+            color: white;
+        }
+
+        .footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            width: 100%;
+            margin-top: 50px;
+        }
+
+        /* Estilos específicos para cada método */
+        .bisection .card-header {
+            background-color: #3498db;
+        }
+
+        .regula-falsi .card-header {
+            background-color: #e74c3c;
+        }
+
+        .newton .card-header {
+            background-color: #2ecc71;
+        }
+
+        .secant .card-header {
+            background-color: #f39c12;
+        }
+
+        .gauss .card-header {
+            background-color: #9b59b6;
+        }
+
+        .jacobi .card-header {
+            background-color: #1abc9c;
+        }
+
+        /* Animación para las tarjetas */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animated {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .method-card {
+                margin-bottom: 30px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>Métodos Matemáticos</h1>
+            <p>Explora diferentes métodos numéricos para resolver problemas matemáticos y de ingeniería</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row g-4">
+            <!-- Bisección -->
+            <div class="col-md-6 col-lg-4">
+                <div class="method-card bisection">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-divide"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">Método de Bisección</h3>
+                        <p class="card-text">Encuentra raíces de funciones continuas dividiendo repetidamente el intervalo y seleccionando el subintervalo donde ocurre el cambio de signo.</p>
+                        <a href="/biseccion_inicio" class="btn-method">Explorar <i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Regula Falsi -->
+            <div class="col-md-6 col-lg-4">
+                <div class="method-card regula-falsi">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-ruler"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">Regula Falsi</h3>
+                        <p class="card-text">Método de posición falsa que combina bisección e interpolación lineal para encontrar raíces de ecuaciones de manera más eficiente.</p>
+                        <a href="/regulafalsi_inicio" class="btn-method">Explorar <i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Newton -->
+            <div class="col-md-6 col-lg-4">
+                <div class="method-card newton">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">Método de Newton</h3>
+                        <p class="card-text">Utiliza la derivada de la función para encontrar mejores aproximaciones a las raíces con convergencia cuadrática.</p>
+                        <a href="/newton_inicio" class="btn-method">Explorar <i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secante -->
+            <div class="col-md-6 col-lg-4">
+                <div class="method-card secant">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">Método de la Secante</h3>
+                        <p class="card-text">Aproxima la derivada usando diferencias finitas, evitando el cálculo explícito de la derivada requerido por Newton.</p>
+                        <a href="secante.html" class="btn-method">Explorar <i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gauss-Jordan-Seidel -->
+            <div class="col-md-6 col-lg-4">
+                <div class="method-card gauss">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-table"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">Gauss-Jordan-Seidel</h3>
+                        <p class="card-text">Métodos para resolver sistemas de ecuaciones lineales mediante eliminación y aproximaciones sucesivas.</p>
+                        <a href="gauss-jordan-seidel.html" class="btn-method">Explorar <i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jacobi -->
+            <div class="col-md-6 col-lg-4">
+                <div class="method-card jacobi">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">Método de Jacobi</h3>
+                        <p class="card-text">Método iterativo para resolver sistemas de ecuaciones lineales utilizando aproximaciones simultáneas.</p>
+                        <a href="jacobi.html" class="btn-method">Explorar <i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2023 Métodos Matemáticos | Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript personalizado -->
+    <script>
+        // Función para animar las tarjetas al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.method-card');
+
+            cards.forEach((card, index) => {
+                // Añadir clase animated con retraso para efecto escalonado
+                setTimeout(() => {
+                    card.classList.add('animated');
+                }, 100 * index);
+            });
+
+            // Efecto hover para las tarjetas
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.zIndex = "10";
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.zIndex = "1";
+                });
+            });
+
+            // Efecto de onda al hacer clic en los botones
+            const buttons = document.querySelectorAll('.btn-method');
+
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Crear elemento de onda
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+
+                    // Posicionar el elemento de onda
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+
+                    ripple.style.width = ripple.style.height = `${size}px`;
+                    ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+                    ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+
+                    // Añadir y luego eliminar el elemento de onda
+                    this.appendChild(ripple);
+
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+
+        // Función para mostrar un mensaje de bienvenida
+        setTimeout(() => {
+            const welcomeMessage = "¡Bienvenido a la plataforma de Métodos Matemáticos!";
+            console.log(welcomeMessage);
+        }, 1000);
+
+        // Función para detectar el tema del sistema y ajustar colores
+        function detectColorScheme() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+        }
+
+        // Detectar tema al cargar
+        detectColorScheme();
+
+        // Escuchar cambios en el tema del sistema
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', detectColorScheme);
+    </script>
+</body>
+</html>

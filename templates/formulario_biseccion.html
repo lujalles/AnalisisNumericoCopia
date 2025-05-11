@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método de Bisección</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- MathJax para fórmulas matemáticas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(52, 152, 219, 0.7) 0%, rgba(41, 128, 185, 0.7) 100%);
+            z-index: 0;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+            color: white;
+        }
+
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-title {
+            color: var(--dark-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .method-info {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        .method-info h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .method-info p {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .formula {
+            background-color: var(--light-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .example {
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .example h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            width: 100%;
+            margin-top: 50px;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animated {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Tooltip personalizado */
+        .custom-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .custom-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .custom-tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--dark-color) transparent transparent transparent;
+        }
+
+        .custom-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .form-container, .method-info {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="/" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="header-content">
+            <h1>Método de Bisección</h1>
+            <p>Una técnica numérica para encontrar raíces de funciones continuas</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <!-- Formulario -->
+            <div class="col-lg-6 mb-4 animated" style="animation-delay: 0.1s;">
+                <div class="form-container">
+                    <h2 class="form-title">
+                        <i class="fas fa-calculator me-2"></i>Calculadora de Bisección
+                    </h2>
+
+                    <form id="bisectionForm" action="/biseccion_final" method="post">
+                        <div class="form-group">
+                            <label for="funcion" class="form-label">Función (f(x)):</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-function"></i>f(x) =</span>
+                                <input type="text" class="form-control" id="funcion" name="funcion" placeholder="Ej: x^2-4" required>
+                                <span class="input-group-text custom-tooltip">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="tooltip-text">Ingresa la función usando x como variable. Ej: x^2-4, sin(x), e^x, etc.</span>
+                                </span>
+                            </div>
+                            <small class="text-muted">Usa x como variable, ^ para potencias, sin(), cos(), tan(), e^x, etc.</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="a" class="form-label">Límite inferior (a):</label>
+                                    <input type="number" step="any" class="form-control" id="a" name="a" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="b" class="form-label">Límite superior (b):</label>
+                                    <input type="number" step="any" class="form-control" id="b" name="b" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="es" class="form-label">Error tolerado (es):</label>
+                            <div class="input-group">
+                                <input type="number" step="any" class="form-control" id="es" name="es" placeholder="Ej: 0.0001" required>
+                                <span class="input-group-text custom-tooltip">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="tooltip-text">Error máximo permitido para detener las iteraciones. Valores típicos: 0.0001, 0.00001</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="imax" class="form-label">Máximo de iteraciones (imax):</label>
+                            <input type="number" class="form-control" id="imax" name="imax" value="100" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="xi" class="form-label">Inicio del gráfico (xi):</label>
+                                    <input type="number" step="any" class="form-control" id="xi" name="xi" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="xf" class="form-label">Fin del gráfico (xf):</label>
+                                    <input type="number" step="any" class="form-control" id="xf" name="xf" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-file-pdf me-2"></i>Generar PDF
+                            </button>
+                            <button type="button" id="calcularBtn" class="btn btn-outline-primary">
+                                <i class="fas fa-calculator me-2"></i>Calcular sin generar PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Información del método -->
+            <div class="col-lg-6 animated" style="animation-delay: 0.3s;">
+                <div class="method-info">
+                    <h3><i class="fas fa-info-circle me-2"></i>Sobre el Método de Bisección</h3>
+
+                    <p>El método de bisección es una técnica numérica para encontrar raíces de una función continua. Se basa en el <strong>Teorema del Valor Intermedio</strong>, que establece que si una función continua toma valores de signos opuestos en los extremos de un intervalo, entonces debe existir al menos una raíz dentro de ese intervalo.</p>
+
+                    <div class="formula">
+                        <p>La fórmula para calcular el punto medio en cada iteración es:</p>
+                        <p>\[ c = \frac{a + b}{2} \]</p>
+                    </div>
+
+                    <p>El algoritmo funciona de la siguiente manera:</p>
+                    <ol>
+                        <li>Se elige un intervalo inicial [a, b] donde f(a) y f(b) tienen signos opuestos.</li>
+                        <li>Se calcula el punto medio c = (a + b) / 2.</li>
+                        <li>Si f(c) = 0 o |b - a| < tolerancia, se ha encontrado la raíz.</li>
+                        <li>Si f(c) tiene el mismo signo que f(a), entonces la raíz está en [c, b], por lo que a = c.</li>
+                        <li>Si f(c) tiene el mismo signo que f(b), entonces la raíz está en [a, c], por lo que b = c.</li>
+                        <li>Se repiten los pasos 2-5 hasta encontrar la raíz o alcanzar el número máximo de iteraciones.</li>
+                    </ol>
+
+                    <div class="example">
+                        <h4>Ejemplo</h4>
+                        <p>Para encontrar una raíz de f(x) = x² - 4 en el intervalo [1, 3]:</p>
+                        <ul>
+                            <li>f(1) = 1² - 4 = -3 (negativo)</li>
+                            <li>f(3) = 3² - 4 = 5 (positivo)</li>
+                            <li>Como f(1) y f(3) tienen signos opuestos, existe una raíz en [1, 3].</li>
+                            <li>Aplicando el método de bisección, encontraremos que la raíz es x = 2.</li>
+                        </ul>
+                    </div>
+
+                    <p><strong>Ventajas:</strong></p>
+                    <ul>
+                        <li>Simple de entender e implementar</li>
+                        <li>Garantiza convergencia si existe una raíz en el intervalo inicial</li>
+                        <li>No requiere calcular derivadas</li>
+                    </ul>
+
+                    <p><strong>Desventajas:</strong></p>
+                    <ul>
+                        <li>Convergencia relativamente lenta</li>
+                        <li>Requiere que la función cambie de signo en el intervalo</li>
+                        <li>No puede encontrar raíces de multiplicidad par fácilmente</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultados -->
+        <div class="row mt-4">
+            <div class="col-12 animated" style="animation-delay: 0.5s;">
+                <div id="resultadosContainer" class="form-container" style="display: none;">
+                    <h2 class="form-title">
+                        <i class="fas fa-chart-line me-2"></i>Resultados
+                    </h2>
+                    <div id="resultados"></div>
+                    <div class="mt-4">
+                        <canvas id="grafico" width="100%" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2023 Métodos Matemáticos | Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Math.js para evaluación de funciones matemáticas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btnCalc = document.getElementById('calcularBtn');
+      const resultadosContainer = document.getElementById('resultadosContainer');
+      const resultadosDiv = document.getElementById('resultados');
+      let chartInstance = null;
+
+      // bisección con math.compile para evitar NaN
+      function biseccion(funcion, a, b, es, imax) {
+        const comp = math.compile(funcion);
+        let iter = [], i = 0, c, fa = comp.evaluate({x: a}), fb = comp.evaluate({x: b}), fc, err;
+        if (fa * fb >= 0) {
+          return { exito: false, mensaje: `f(a)·f(b) ≥ 0. Cambia [${a},${b}].`, iteraciones: [] };
+        }
+        do {
+          c = (a + b)/2;
+          fc = comp.evaluate({x: c});
+          err = i>0 ? Math.abs((c - iter[i-1].c)/c) : null;
+          iter.push({ i: i+1, a, b, c, fa, fb, fc, error: err });
+          if (fa * fc < 0) {
+            b = c; fb = fc;
+          } else {
+            a = c; fa = fc;
+          }
+          i++;
+        } while (i < imax && (err === null || err > es) && Math.abs(fc) > 1e-15);
+
+        return { exito: true, raiz: c, error: err, iteraciones: iter, mensaje: `Raíz en ≈ ${c.toFixed(6)} tras ${i} it.` };
+      }
+
+      // generar puntos para el gráfico
+      function generarPuntos(comp, xi, xf, n=100) {
+        const pts = [], paso = (xf - xi)/n;
+        for (let k=0; k<=n; k++) {
+          const x = xi + k*paso;
+          const y = comp.evaluate({x});
+          if (!isNaN(y) && Math.abs(y)<1e6) pts.push({x,y});
+        }
+        return pts;
+      }
+
+      // crea o actualiza Chart.js
+      function crearGrafico(funcion, xi, xf, raiz=null) {
+        if (chartInstance) chartInstance.destroy();
+        const comp = math.compile(funcion);
+        const dataPts = generarPuntos(comp, xi, xf);
+
+        const datasets = [{
+          label: 'f(x)',
+          data: dataPts,
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: false
+        }];
+
+        if (raiz !== null) {
+          datasets.push({
+            label: 'Raíz',
+            data: [{ x: raiz, y: 0 }],
+            pointRadius: 5,
+            showLine: false
+          });
+        }
+
+        const ctx = document.getElementById('grafico').getContext('2d');
+        chartInstance = new Chart(ctx, {
+          type: 'scatter',
+          data: { datasets },
+          options: {
+            responsive: true,
+            plugins: {
+              title: { display: true, text: `f(x) = ${funcion}` },
+              tooltip: { callbacks: {
+                label: ctx => `(${ctx.parsed.x.toFixed(4)}, ${ctx.parsed.y.toFixed(4)})`
+              }}
+            },
+            scales: {
+              x: { type: 'linear', position: 'bottom', title: { display: true, text: 'x' } },
+              y: { title: { display: true, text: 'f(x)' } }
+            }
+          }
+        });
+      }
+
+      // pinta la tabla y lanza el gráfico
+      function mostrarResultados(res, funcion, xi, xf) {
+        resultadosContainer.style.display = 'block';
+        if (!res.exito) {
+          resultadosDiv.innerHTML = `<div class="alert alert-warning">${res.mensaje}</div>`;
+          return;
+        }
+        let html = `
+          <div class="alert alert-success">
+            ${res.mensaje}<br>
+            <strong>f(raíz):</strong> ${math.format(math.evaluate(funcion, {x: res.raiz}), {precision:10})}
+          </div>
+          <h4 class="mt-4 mb-3">Iteraciones</h4>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead class="table-primary">
+                <tr><th>#</th><th>a</th><th>b</th><th>c</th><th>f(a)</th><th>f(b)</th><th>f(c)</th><th>Error</th></tr>
+              </thead><tbody>
+        `;
+        res.iteraciones.forEach(it => {
+          html += `<tr>
+            <td>${it.i}</td>
+            <td>${it.a.toFixed(6)}</td>
+            <td>${it.b.toFixed(6)}</td>
+            <td>${it.c.toFixed(6)}</td>
+            <td>${it.fa.toFixed(6)}</td>
+            <td>${it.fb.toFixed(6)}</td>
+            <td>${it.fc.toFixed(6)}</td>
+            <td>${it.error!==null ? it.error.toFixed(6) : '—'}</td>
+          </tr>`;
+        });
+        html += `</tbody></table></div>`;
+        resultadosDiv.innerHTML = html;
+
+        crearGrafico(funcion, xi, xf, res.raiz);
+        resultadosContainer.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      // evento del botón
+        btnCalc.addEventListener('click', function(e) {
+          e.preventDefault();
+
+          // 1) Recogemos todo y depuramos:
+          const f   = document.getElementById('funcion').value.trim();
+          const a   = parseFloat(document.getElementById('a').value);
+          const b   = parseFloat(document.getElementById('b').value);
+          const es  = parseFloat(document.getElementById('es').value);
+          const imax= parseInt  (document.getElementById('imax').value, 10);
+          const xi  = parseFloat(document.getElementById('xi').value);
+          const xf  = parseFloat(document.getElementById('xf').value);
+
+          console.log({ f, a, b, es, imax, xi, xf });
+
+          // 2) Validación individual y mensajes claros:
+          if (!f) {
+            return alert('Por favor, ingresa la función f(x).');
+          }
+          if (isNaN(a)) {
+            return alert('El límite inferior “a” no es un número válido.');
+          }
+          if (isNaN(b)) {
+            return alert('El límite superior “b” no es un número válido.');
+          }
+          if (isNaN(es)) {
+            return alert('El error tolerado “es” no es un número válido.');
+          }
+          if (isNaN(imax)) {
+            return alert('El máximo de iteraciones “imax” no es un número válido.');
+          }
+          if (isNaN(xi)) {
+            return alert('El inicio del gráfico “xi” no es un número válido.');
+          }
+          if (isNaN(xf)) {
+            return alert('El fin del gráfico “xf” no es un número válido.');
+          }
+
+          // 3) Si todo ok, lanzamos la bisección y pintamos:
+          const resultado = biseccion(f, a, b, es, imax);
+          mostrarResultados(resultado, f, xi, xf);
+        });
+    });
+    </script>
+
+
+</body>
+</html>
