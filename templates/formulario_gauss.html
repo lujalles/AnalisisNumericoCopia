@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método de Gauss</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- MathJax para fórmulas matemáticas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary-color: #9b59b6;
+            --secondary-color: #8e44ad;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(155, 89, 182, 0.7) 0%, rgba(142, 68, 173, 0.7) 100%);
+            z-index: 0;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+            color: white;
+        }
+
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-title {
+            color: var(--dark-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(155, 89, 182, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .method-info {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        .method-info h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .method-info p {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .formula {
+            background-color: var(--light-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .example {
+            background-color: rgba(155, 89, 182, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .example h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            width: 100%;
+            margin-top: 50px;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animated {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Tooltip personalizado */
+        .custom-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .custom-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .custom-tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--dark-color) transparent transparent transparent;
+        }
+
+        .custom-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Estilos específicos para matrices */
+        .matrix-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .matrix-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .matrix-cell {
+            width: 60px;
+        }
+
+        .matrix-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .matrix-preview {
+            font-family: monospace;
+            padding: 10px;
+            background-color: var(--light-color);
+            border-radius: 8px;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+
+        .matrix-display {
+            font-family: monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .matrix-display table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        .matrix-display td {
+            padding: 5px 10px;
+            text-align: center;
+        }
+
+        .matrix-bracket {
+            position: relative;
+        }
+
+        .matrix-bracket::before,
+        .matrix-bracket::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #333;
+        }
+
+        .matrix-bracket::before {
+            left: 0;
+            border-left: 1px solid #333;
+        }
+
+        .matrix-bracket::after {
+            right: 0;
+            border-right: 1px solid #333;
+        }
+
+        .step-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .table-primary {
+            background-color: rgba(155, 89, 182, 0.2) !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .form-container, .method-info {
+                padding: 20px;
+            }
+
+            .matrix-cell {
+                width: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="index.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="header-content">
+            <h1>Método de Gauss</h1>
+            <p>Técnica de eliminación para resolver sistemas de ecuaciones lineales</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <!-- Formulario -->
+            <div class="col-lg-6 mb-4 animated" style="animation-delay: 0.1s;">
+                <div class="form-container">
+                    <h2 class="form-title">
+                        <i class="fas fa-calculator me-2"></i>Calculadora del Método de Gauss
+                    </h2>
+
+                    <form id="gaussForm" action="/gauss_final" method="POST">
+                        <div class="form-group">
+                            <label for="dimension" class="form-label">Dimensión del sistema:</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="dimension" min="2" max="10" value="3">
+                                <button type="button" class="btn btn-primary" id="generarMatriz">Generar</button>
+                            </div>
+                            <small class="text-muted">Ingrese un valor entre 2 y 10</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Matriz aumentada [A|b]:</label>
+                            <div class="custom-tooltip">
+                                <i class="fas fa-info-circle ms-2"></i>
+                                <span class="tooltip-text">Ingrese los coeficientes de la matriz A y el vector b como una matriz aumentada</span>
+                            </div>
+                            <div id="matrizContainer" class="matrix-container mt-2"></div>
+                            <textarea name="matriz_aumentada" id="matrizInput" class="d-none" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Vista previa del sistema:</label>
+                            <div id="sistemaPreview" class="matrix-preview">
+                                Sistema no generado aún
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Opciones:</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="pivoteoCheck" name="pivoteo" checked>
+                                <label class="form-check-label" for="pivoteoCheck">
+                                    Usar pivoteo parcial
+                                </label>
+                                <div class="custom-tooltip">
+                                    <i class="fas fa-info-circle ms-2"></i>
+                                    <span class="tooltip-text">El pivoteo parcial selecciona el elemento de mayor valor absoluto como pivote para mejorar la estabilidad numérica</span>
+                                </div>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="mostrarPasosCheck" name="mostrar_pasos" checked>
+                                <label class="form-check-label" for="mostrarPasosCheck">
+                                    Mostrar pasos detallados
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-file-pdf me-2"></i>Generar PDF
+                            </button>
+                            <button type="button" id="calcularBtn" class="btn btn-outline-primary">
+                                <i class="fas fa-calculator me-2"></i>Calcular sin generar PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Información del método -->
+            <div class="col-lg-6 animated" style="animation-delay: 0.3s;">
+                <div class="method-info">
+                    <h3><i class="fas fa-info-circle me-2"></i>Sobre el Método de Gauss</h3>
+
+                    <p>El método de eliminación gaussiana es una técnica fundamental para resolver sistemas de ecuaciones lineales. Consiste en transformar el sistema original en un sistema equivalente con una matriz triangular superior, lo que facilita la obtención de las soluciones mediante sustitución regresiva.</p>
+
+                    <div class="formula">
+                        <p>Para un sistema $Ax = b$, el método de Gauss transforma la matriz aumentada $[A|b]$ en una matriz escalonada mediante operaciones elementales de fila:</p>
+                        <p>\[ [A|b] \rightarrow [U|c] \]</p>
+                        <p>Donde $U$ es una matriz triangular superior.</p>
+                    </div>
+
+                    <p>El algoritmo funciona de la siguiente manera:</p>
+                    <ol>
+                        <li>Se forma la matriz aumentada $[A|b]$ del sistema.</li>
+                        <li>Para cada fila $i$ (desde 1 hasta $n-1$):
+                            <ul>
+                                <li>Si se usa pivoteo parcial, se busca el elemento de mayor valor absoluto en la columna $i$ a partir de la fila $i$, y se intercambian las filas si es necesario.</li>
+                                <li>Para cada fila $j$ (desde $i+1$ hasta $n$), se elimina el elemento $a_{ji}$ calculando un multiplicador $m_{ji} = a_{ji}/a_{ii}$ y restando $m_{ji}$ veces la fila $i$ de la fila $j$.</li>
+                            </ul>
+                        </li>
+                        <li>Se resuelve el sistema triangular superior resultante mediante sustitución regresiva.</li>
+                    </ol>
+
+                    <div class="example">
+                        <h4>Ejemplo</h4>
+                        <p>Consideremos el sistema:</p>
+                        <p>
+                            \begin{align}
+                            2x_1 + x_2 - x_3 &= 8 \\
+                            -3x_1 - x_2 + 2x_3 &= -11 \\
+                            -2x_1 + x_2 + 2x_3 &= -3
+                            \end{align}
+                        </p>
+                        <p>La matriz aumentada es:</p>
+                        <p>
+                            \[ \begin{bmatrix}
+                            2 & 1 & -1 & | & 8 \\
+                            -3 & -1 & 2 & | & -11 \\
+                            -2 & 1 & 2 & | & -3
+                            \end{bmatrix} \]
+                        </p>
+                        <p>Después de aplicar eliminación gaussiana, obtenemos:</p>
+                        <p>
+                            \[ \begin{bmatrix}
+                            2 & 1 & -1 & | & 8 \\
+                            0 & 0.5 & 0.5 & | & 1 \\
+                            0 & 2 & 1 & | & 5
+                            \end{bmatrix} \]
+                        </p>
+                        <p>Y mediante sustitución regresiva, encontramos la solución: $x_1 = 3, x_2 = 2, x_3 = 0$.</p>
+                    </div>
+
+                    <p><strong>Ventajas:</strong></p>
+                    <ul>
+                        <li>Método directo que proporciona la solución exacta (salvo errores de redondeo)</li>
+                        <li>Algoritmo sencillo de implementar</li>
+                        <li>Base para otros métodos más avanzados como la factorización LU</li>
+                    </ul>
+
+                    <p><strong>Desventajas:</strong></p>
+                    <ul>
+                        <li>Puede ser inestable numéricamente sin pivoteo</li>
+                        <li>Costo computacional de $O(n^3)$ para sistemas de $n$ ecuaciones</li>
+                        <li>No aprovecha la estructura de matrices especiales (dispersas, simétricas, etc.)</li>
+                    </ul>
+
+                    <div class="mt-4">
+                        <p><strong>Pivoteo parcial:</strong></p>
+                        <p>El pivoteo parcial es una técnica que mejora la estabilidad numérica del método de Gauss. Consiste en seleccionar como pivote el elemento de mayor valor absoluto en la columna actual, lo que reduce los errores de redondeo y evita divisiones por números muy pequeños.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultados -->
+        <div class="row mt-4">
+            <div class="col-12 animated" style="animation-delay: 0.5s;">
+                <div id="resultadosContainer" class="form-container" style="display: none;">
+                    <h2 class="form-title">
+                        <i class="fas fa-chart-line me-2"></i>Resultados
+                    </h2>
+                    <div id="resultados"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2023 Métodos Matemáticos | Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Referencias a elementos del DOM
+            const dimensionInput = document.getElementById('dimension');
+            const generarMatrizBtn = document.getElementById('generarMatriz');
+            const matrizContainer = document.getElementById('matrizContainer');
+            const matrizInput = document.getElementById('matrizInput');
+            const sistemaPreview = document.getElementById('sistemaPreview');
+            const form = document.getElementById('gaussForm');
+            const calcularBtn = document.getElementById('calcularBtn');
+            const resultadosContainer = document.getElementById('resultadosContainer');
+            const resultadosDiv = document.getElementById('resultados');
+            const pivoteoCheck = document.getElementById('pivoteoCheck');
+            const mostrarPasosCheck = document.getElementById('mostrarPasosCheck');
+
+            // Función para generar la matriz aumentada
+            generarMatrizBtn.addEventListener('click', function() {
+                const n = parseInt(dimensionInput.value);
+
+                if (isNaN(n) || n < 2 || n > 10) {
+                    alert('Por favor, ingrese una dimensión válida entre 2 y 10.');
+                    return;
+                }
+
+                // Generar matriz aumentada [A|b]
+                matrizContainer.innerHTML = '';
+                for (let i = 0; i < n; i++) {
+                    const row = document.createElement('div');
+                    row.className = 'matrix-row';
+
+                    // Coeficientes de A
+                    for (let j = 0; j < n; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'matrix-cell';
+
+                        const input = document.createElement('input');
+                        input.type = 'number';
+                        input.step = 'any';
+                        input.className = 'form-control matrix-input';
+                        input.dataset.row = i;
+                        input.dataset.col = j;
+
+                        // Generar valores aleatorios para la matriz
+                        if (i === j) {
+                            // Elementos diagonales con valores más grandes para mejor condicionamiento
+                            input.value = Math.floor(Math.random() * 8) + 2; // Valores entre 2 y 10
+                        } else {
+                            input.value = Math.floor(Math.random() * 5) - 2; // Valores entre -2 y 2
+                        }
+
+                        cell.appendChild(input);
+                        row.appendChild(cell);
+                    }
+
+                    // Separador visual
+                    const separator = document.createElement('div');
+                    separator.className = 'd-flex align-items-center mx-2';
+                    separator.innerHTML = '<span class="fw-bold">|</span>';
+                    row.appendChild(separator);
+
+                    // Vector b
+                    const cellB = document.createElement('div');
+                    cellB.className = 'matrix-cell';
+
+                    const inputB = document.createElement('input');
+                    inputB.type = 'number';
+                    inputB.step = 'any';
+                    inputB.className = 'form-control vector-input';
+                    inputB.dataset.row = i;
+                    inputB.dataset.col = n; // Columna n para el vector b
+                    inputB.value = Math.floor(Math.random() * 20) - 10; // Valores aleatorios entre -10 y 10
+
+                    cellB.appendChild(inputB);
+                    row.appendChild(cellB);
+
+                    matrizContainer.appendChild(row);
+                }
+
+                // Actualizar vista previa
+                actualizarVistaPrevia();
+
+                // Añadir event listeners para actualizar la vista previa cuando cambian los valores
+                const matrixInputs = document.querySelectorAll('.matrix-input, .vector-input');
+                matrixInputs.forEach(input => {
+                    input.addEventListener('change', actualizarVistaPrevia);
+                });
+            });
+
+            // Función para actualizar la vista previa del sistema
+            function actualizarVistaPrevia() {
+                const matrixInputs = document.querySelectorAll('.matrix-input');
+                const vectorInputs = document.querySelectorAll('.vector-input');
+
+                if (matrixInputs.length === 0 || vectorInputs.length === 0) {
+                    return;
+                }
+
+                const n = vectorInputs.length;
+                let matrizAumentada = Array(n).fill().map(() => Array(n + 1).fill(0));
+
+                // Obtener valores de la matriz A
+                matrixInputs.forEach(input => {
+                    const i = parseInt(input.dataset.row);
+                    const j = parseInt(input.dataset.col);
+                    matrizAumentada[i][j] = parseFloat(input.value) || 0;
+                });
+
+                // Obtener valores del vector b
+                vectorInputs.forEach(input => {
+                    const i = parseInt(input.dataset.row);
+                    matrizAumentada[i][n] = parseFloat(input.value) || 0;
+                });
+
+                // Actualizar campo oculto para el formulario
+                matrizInput.value = JSON.stringify(matrizAumentada);
+
+                // Generar HTML para la vista previa
+                let previewHTML = '';
+                for (let i = 0; i < n; i++) {
+                    let rowHTML = '';
+                    for (let j = 0; j < n; j++) {
+                        const value = matrizAumentada[i][j];
+                        const sign = j === 0 ? '' : (value >= 0 ? ' + ' : ' - ');
+                        const absValue = Math.abs(value);
+
+                        if (value !== 0) {
+                            rowHTML += `${sign}${absValue === 1 ? '' : absValue}x<sub>${j+1}</sub>`;
+                        }
+                    }
+                    previewHTML += `${rowHTML} = ${matrizAumentada[i][n]}<br>`;
+                }
+
+                sistemaPreview.innerHTML = previewHTML;
+            }
+
+            // Función para mostrar una matriz en formato HTML
+            function mostrarMatriz(matriz, titulo = null) {
+                let html = '<div class="matrix-display">';
+                if (titulo) {
+                    html += `<div class="mb-2 fw-bold">${titulo}</div>`;
+                }
+
+                html += '<table>';
+                for (let i = 0; i < matriz.length; i++) {
+                    html += '<tr>';
+                    for (let j = 0; j < matriz[i].length; j++) {
+                        // Añadir separador visual antes de la última columna (vector b)
+                        const separador = j === matriz[i].length - 1 ? 'border-left: 2px solid #333;' : '';
+                        html += `<td style="${separador}">${matriz[i][j].toFixed(4).replace(/\.?0+$/, '')}</td>`;
+                    }
+                    html += '</tr>';
+                }
+                html += '</table></div>';
+
+                return html;
+            }
+
+            // Método de eliminación gaussiana
+            function eliminacionGaussiana(matrizAumentada, usarPivoteo = true, mostrarPasos = true) {
+                // Crear una copia profunda de la matriz para no modificar la original
+                const matriz = JSON.parse(JSON.stringify(matrizAumentada));
+                const n = matriz.length;
+                let pasos = [];
+                let intercambios = 0;
+
+                // Paso 1: Eliminación hacia adelante
+                for (let k = 0; k < n - 1; k++) {
+                    // Pivoteo parcial si está activado
+                    if (usarPivoteo) {
+                        let maxIndex = k;
+                        let maxValue = Math.abs(matriz[k][k]);
+
+                        for (let i = k + 1; i < n; i++) {
+                            if (Math.abs(matriz[i][k]) > maxValue) {
+                                maxValue = Math.abs(matriz[i][k]);
+                                maxIndex = i;
+                            }
+                        }
+
+                        // Intercambiar filas si es necesario
+                        if (maxIndex !== k) {
+                            [matriz[k], matriz[maxIndex]] = [matriz[maxIndex], matriz[k]];
+                            intercambios++;
+
+                            if (mostrarPasos) {
+                                pasos.push({
+                                    tipo: 'intercambio',
+                                    descripcion: `Intercambio de filas ${k+1} y ${maxIndex+1}`,
+                                    matriz: JSON.parse(JSON.stringify(matriz))
+                                });
+                            }
+                        }
+                    }
+
+                    // Verificar si el pivote es cero
+                    if (Math.abs(matriz[k][k]) < 1e-10) {
+                        if (mostrarPasos) {
+                            pasos.push({
+                                tipo: 'error',
+                                descripcion: `Error: Pivote nulo en la posición (${k+1},${k+1}). El sistema puede no tener solución única.`
+                            });
+                        }
+                        return {
+                            exito: false,
+                            mensaje: `Error: Pivote nulo en la posición (${k+1},${k+1}). El sistema puede no tener solución única.`,
+                            pasos: pasos
+                        };
+                    }
+
+                    // Eliminación para cada fila debajo de k
+                    for (let i = k + 1; i < n; i++) {
+                        const factor = matriz[i][k] / matriz[k][k];
+
+                        // Actualizar fila i
+                        for (let j = k; j <= n; j++) {
+                            matriz[i][j] -= factor * matriz[k][j];
+                        }
+
+                        if (mostrarPasos) {
+                            pasos.push({
+                                tipo: 'eliminacion',
+                                descripcion: `Fila ${i+1} = Fila ${i+1} - ${factor.toFixed(4)} × Fila ${k+1}`,
+                                matriz: JSON.parse(JSON.stringify(matriz))
+                            });
+                        }
+                    }
+                }
+
+                // Paso 2: Sustitución regresiva
+                let solucion = new Array(n).fill(0);
+
+                for (let i = n - 1; i >= 0; i--) {
+                    let suma = 0;
+                    for (let j = i + 1; j < n; j++) {
+                        suma += matriz[i][j] * solucion[j];
+                    }
+
+                    // Verificar si el coeficiente diagonal es cero
+                    if (Math.abs(matriz[i][i]) < 1e-10) {
+                        if (mostrarPasos) {
+                            pasos.push({
+                                tipo: 'error',
+                                descripcion: `Error: Coeficiente diagonal nulo en la posición (${i+1},${i+1}). El sistema puede no tener solución única.`
+                            });
+                        }
+                        return {
+                            exito: false,
+                            mensaje: `Error: Coeficiente diagonal nulo en la posición (${i+1},${i+1}). El sistema puede no tener solución única.`,
+                            pasos: pasos
+                        };
+                    }
+
+                    solucion[i] = (matriz[i][n] - suma) / matriz[i][i];
+
+                    if (mostrarPasos) {
+                        pasos.push({
+                            tipo: 'sustitucion',
+                            descripcion: `x${i+1} = (${matriz[i][n].toFixed(4)} - ${suma.toFixed(4)}) / ${matriz[i][i].toFixed(4)} = ${solucion[i].toFixed(4)}`,
+                            variable: `x${i+1}`,
+                            valor: solucion[i]
+                        });
+                    }
+                }
+
+                return {
+                    exito: true,
+                    mensaje: "Sistema resuelto correctamente.",
+                    solucion: solucion,
+                    matrizFinal: matriz,
+                    pasos: pasos,
+                    intercambios: intercambios
+                };
+            }
+
+            // Función para mostrar los resultados
+            function mostrarResultados(resultado) {
+                resultadosContainer.style.display = 'block';
+
+                if (!resultado.exito) {
+                    resultadosDiv.innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>${resultado.mensaje}
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Mensaje de éxito
+                let mensajeHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>${resultado.mensaje}
+                    </div>
+                `;
+
+                // Solución
+                let solucionHTML = `
+                    <h4 class="mt-4 mb-3">Solución del sistema</h4>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Variable</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                for (let i = 0; i < resultado.solucion.length; i++) {
+                    solucionHTML += `
+                        <tr>
+                            <td>x<sub>${i+1}</sub></td>
+                            <td>${resultado.solucion[i].toFixed(6)}</td>
+                        </tr>
+                    `;
+                }
+
+                solucionHTML += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                // Pasos detallados
+                let pasosHTML = '';
+                if (mostrarPasosCheck.checked && resultado.pasos && resultado.pasos.length > 0) {
+                    pasosHTML = `
+                        <h4 class="mt-4 mb-3">Pasos detallados</h4>
+                    `;
+
+                    // Mostrar matriz inicial
+                    if (resultado.pasos.length > 0 && resultado.pasos[0].matriz) {
+                        pasosHTML += `
+                            <div class="step-container">
+                                <div class="step-title">Matriz aumentada inicial</div>
+                                ${mostrarMatriz(resultado.pasos[0].matriz)}
+                            </div>
+                        `;
+                    }
+
+                    // Mostrar pasos de eliminación
+                    for (let i = 0; i < resultado.pasos.length; i++) {
+                        const paso = resultado.pasos[i];
+
+                        if (paso.tipo === 'error') {
+                            pasosHTML += `
+                                <div class="step-container bg-warning bg-opacity-10">
+                                    <div class="step-title text-warning">${paso.descripcion}</div>
+                                </div>
+                            `;
+                        } else if (paso.tipo === 'intercambio' || paso.tipo === 'eliminacion') {
+                            pasosHTML += `
+                                <div class="step-container">
+                                    <div class="step-title">${paso.descripcion}</div>
+                                    ${mostrarMatriz(paso.matriz)}
+                                </div>
+                            `;
+                        } else if (paso.tipo === 'sustitucion') {
+                            pasosHTML += `
+                                <div class="step-container bg-light">
+                                    <div class="step-title">Sustitución regresiva: ${paso.descripcion}</div>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    // Mostrar matriz final
+                    pasosHTML += `
+                        <div class="step-container">
+                            <div class="step-title">Matriz triangular final</div>
+                            ${mostrarMatriz(resultado.matrizFinal)}
+                        </div>
+                    `;
+                }
+
+                // Combinar todo el HTML
+                resultadosDiv.innerHTML = mensajeHTML + solucionHTML + pasosHTML;
+
+                // Desplazarse a los resultados
+                resultadosContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // Evento para calcular sin generar PDF
+            calcularBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Obtener valores del formulario
+                const matrizAumentada = JSON.parse(matrizInput.value || '[]');
+                const usarPivoteo = pivoteoCheck.checked;
+                const mostrarPasos = mostrarPasosCheck.checked;
+
+                // Validar entrada
+                if (matrizAumentada.length === 0) {
+                    alert('Por favor, genere la matriz aumentada primero.');
+                    return;
+                }
+
+                // Ejecutar método de eliminación gaussiana
+                const resultado = eliminacionGaussiana(matrizAumentada, usarPivoteo, mostrarPasos);
+
+                // Mostrar resultados
+                mostrarResultados(resultado);
+            });
+
+            // Generar matriz 3x3 por defecto al cargar la página
+            dimensionInput.value = 3;
+            generarMatrizBtn.click();
+        });
+    </script>
+</body>
+</html>
