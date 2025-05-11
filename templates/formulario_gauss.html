@@ -459,18 +459,18 @@
                     <p>El método de eliminación gaussiana es una técnica fundamental para resolver sistemas de ecuaciones lineales. Consiste en transformar el sistema original en un sistema equivalente con una matriz triangular superior, lo que facilita la obtención de las soluciones mediante sustitución regresiva.</p>
 
                     <div class="formula">
-                        <p>Para un sistema $Ax = b$, el método de Gauss transforma la matriz aumentada $[A|b]$ en una matriz escalonada mediante operaciones elementales de fila:</p>
+                        <p>Para un sistema Ax = b, el método de Gauss transforma la matriz aumentada [A|b] en una matriz escalonada mediante operaciones elementales de fila:</p>
                         <p>\[ [A|b] \rightarrow [U|c] \]</p>
-                        <p>Donde $U$ es una matriz triangular superior.</p>
+                        <p>Donde U es una matriz triangular superior.</p>
                     </div>
 
                     <p>El algoritmo funciona de la siguiente manera:</p>
                     <ol>
-                        <li>Se forma la matriz aumentada $[A|b]$ del sistema.</li>
-                        <li>Para cada fila $i$ (desde 1 hasta $n-1$):
+                        <li>Se forma la matriz aumentada [A|b] del sistema.</li>
+                        <li>Para cada fila i (desde 1 hasta n-1):
                             <ul>
-                                <li>Si se usa pivoteo parcial, se busca el elemento de mayor valor absoluto en la columna $i$ a partir de la fila $i$, y se intercambian las filas si es necesario.</li>
-                                <li>Para cada fila $j$ (desde $i+1$ hasta $n$), se elimina el elemento $a_{ji}$ calculando un multiplicador $m_{ji} = a_{ji}/a_{ii}$ y restando $m_{ji}$ veces la fila $i$ de la fila $j$.</li>
+                                <li>Si se usa pivoteo parcial, se busca el elemento de mayor valor absoluto en la columna i a partir de la fila i, y se intercambian las filas si es necesario.</li>
+                                <li>Para cada fila j (desde i+1 hasta n), se elimina el elemento a{ji} calculando un multiplicador m{ji} = a{ji}/a{ii} y restando m{ji} veces la fila i de la fila j.</li>
                             </ul>
                         </li>
                         <li>Se resuelve el sistema triangular superior resultante mediante sustitución regresiva.</li>
@@ -502,7 +502,7 @@
                             0 & 2 & 1 & | & 5
                             \end{bmatrix} \]
                         </p>
-                        <p>Y mediante sustitución regresiva, encontramos la solución: $x_1 = 3, x_2 = 2, x_3 = 0$.</p>
+                        <p>Y mediante sustitución regresiva, encontramos la solución: x1 = 3, x2 = 2, x3 = 0.</p>
                     </div>
 
                     <p><strong>Ventajas:</strong></p>
@@ -515,7 +515,7 @@
                     <p><strong>Desventajas:</strong></p>
                     <ul>
                         <li>Puede ser inestable numéricamente sin pivoteo</li>
-                        <li>Costo computacional de $O(n^3)$ para sistemas de $n$ ecuaciones</li>
+                        <li>Costo computacional de O(n^3) para sistemas de n ecuaciones</li>
                         <li>No aprovecha la estructura de matrices especiales (dispersas, simétricas, etc.)</li>
                     </ul>
 
@@ -543,7 +543,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>© 2023 Métodos Matemáticos | Todos los derechos reservados</p>
+            <p>© 2025 Métodos Matemáticos | Todos los derechos reservados</p>
         </div>
     </footer>
 
