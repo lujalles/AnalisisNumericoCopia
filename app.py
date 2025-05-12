@@ -20,17 +20,28 @@ def regulafalsi_inicio():
 
 @app.route('/regulafalsi_final', methods=['POST'])
 def regulafalsi_final():
-    f = request.form['f']
-    a = float(request.form['a'])
-    b = float(request.form['b'])
-    es = float(request.form['es'])
-    imax = int(request.form['imax'])
-    xi = float(request.form['xi'])
-    xf = float(request.form['xf'])
-
-    generar_regula_falsi_pdf(f, a, b, es, imax, xi, xf)
-
-    return send_file("reporte_regulafalsi.pdf", as_attachment=True)
+    try:
+        f = request.form['f']
+        a = float(request.form['a'])
+        b = float(request.form['b'])
+        es = float(request.form['es'])
+        imax = int(request.form['imax'])
+        xi = float(request.form.get('xi', 1.0))  # Valor por defecto si no se proporciona
+        xf = float(request.form.get('xf', 4.0))  # Valor por defecto si no se proporciona
+        
+        # Validación básica de los parámetros
+        if a >= b:
+            return "Error: 'a' debe ser menor que 'b'", 400
+        if es <= 0:
+            return "Error: 'es' debe ser mayor que 0", 400
+        
+        # Generar PDF
+        generar_regula_falsi_pdf(f, a, b, es, imax, xi, xf)
+        
+        return send_file("reporte_regulafalsi.pdf", as_attachment=True)
+    except Exception as e:
+        return f"Error al procesar la solicitud: {str(e)}", 500
+    
 @app.route('/biseccion_inicio')
 def biseccion_inicio():
     return render_template('formulario_biseccion.html')
