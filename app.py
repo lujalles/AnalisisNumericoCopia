@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, send_file
 import os
 from services.biseccion import biseccion
-from services.regulafalsi import regula_falsi as generar_regula_falsi_pdf
+# Importación correcta
+from services.regulafalsi import calcular_regula_falsi_y_generar_pdf
 from services.NEWTON import newton_raphson  # importa tu función
 from services.secante import generar_pdf_secante
 from services.jacobi import calcular_jacobi_y_generar_pdf
@@ -26,19 +27,18 @@ def regulafalsi_final():
         b = float(request.form['b'])
         es = float(request.form['es'])
         imax = int(request.form['imax'])
-        xi = float(request.form.get('xi', 1.0))  # Valor por defecto si no se proporciona
-        xf = float(request.form.get('xf', 4.0))  # Valor por defecto si no se proporciona
-        
-        # Validación básica de los parámetros
+        xi = float(request.form.get('xi', 1.0))
+        xf = float(request.form.get('xf', 4.0))
+
         if a >= b:
             return "Error: 'a' debe ser menor que 'b'", 400
         if es <= 0:
             return "Error: 'es' debe ser mayor que 0", 400
-        
-        # Generar PDF
-        generar_regula_falsi_pdf(f, a, b, es, imax, xi, xf)
-        
-        return send_file("reporte_regulafalsi.pdf", as_attachment=True)
+
+        pdf_path = calcular_regula_falsi_y_generar_pdf(f, a, b, es, imax, xi, xf)
+
+        return send_file(pdf_path, as_attachment=True)
+
     except Exception as e:
         return f"Error al procesar la solicitud: {str(e)}", 500
     
