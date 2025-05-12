@@ -57,21 +57,63 @@ def newton_inicio():
 
 @app.route('/newton_final', methods=['POST'])
 def newton_final():
-    f = request.form['funcion']
-    df = request.form['derivada']
-    x0 = float(request.form['x0'])
-    tol = float(request.form['tolerancia'])
-    imax = int(request.form['max_iter'])
-    xi = float(request.form['x_min'])
-    xf = float(request.form['x_max'])
-
-    newton_raphson(f, df, x0, tol, imax, xi, xf)
-
-
-    # Devuelve el PDF generado
-    return send_file("reporte_newton.pdf", as_attachment=True)
-
+    try:
+        # Obtener datos del formulario
+        f = request.form['funcion']
+        df = request.form['derivada']
+        x0 = float(request.form['x0'])
+        tol = float(request.form['tolerancia'])
+        imax = int(request.form['max_iter'])
+        xi = float(request.form['x_min'])
+        xf = float(request.form['x_max'])
+        
+        # Convertir ^ a ** si es necesario
+        f = f.replace('^', '**')
+        df = df.replace('^', '**')
+        
+        # Generar el reporte
+        resultado = newton_raphson(f, df, x0, tol, imax, xi, xf)
+        
+        # Verificar que el archivo se creó
+        if not os.path.exists(resultado['pdf']):
+            raise FileNotFoundError(f"No se pudo generar el PDF en {resultado['pdf']}")
+        
+        # Enviar el archivo como respuesta
+        return send_file(
+            resultado['pdf'],
+            as_attachment=True,
+            mimetype='application/pdf',
+            download_name="Reporte_Newton_Raphson.pdf"
+        )
+        
+    except Exception as e:
+        # Mensaje de error simple si no existe error.html
+        error_message = f"Error al generar el reporte: {str(e)}"
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Error</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 40px; }}
+                .error {{ color: #d9534f; background-color: #f8f9fa; 
+                        padding: 20px; border-radius: 5px; border: 1px solid #d9534f; }}
+                a {{ color: #337ab7; text-decoration: none; }}
+                a:hover {{ text-decoration: underline; }}
+            </style>
+        </head>
+        <body>
+            <h1>Error en el sistema</h1>
+            <div class="error">
+                <p>{error_message}</p>
+                <p><a href="/newton_inicio">Volver al formulario</a></p>
+            </div>
+        </body>
+        </html>
+        """, 500
+    
 @app.route('/secante_inicio')
+
 def secante_inicio():
     return render_template('formulario_secante.html')
 
