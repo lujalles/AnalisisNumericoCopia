@@ -4,7 +4,7 @@ from services.biseccion import biseccion
 # Importación correcta
 from services.regulafalsi import calcular_regula_falsi_y_generar_pdf
 from services.NEWTON import newton_raphson  # importa tu función
-from services.secante import generar_pdf_secante
+from services.secante import calcular_secante_y_generar_pdf
 from services.jacobi import calcular_jacobi_y_generar_pdf
 from services.Gauss_seidel import calcular_gauss_seidel_y_generar_pdf
 import ast
@@ -124,22 +124,31 @@ def newton_final():
         """, 500
     
 @app.route('/secante_inicio')
-
 def secante_inicio():
     return render_template('formulario_secante.html')
 
 @app.route('/secante_final', methods=['POST'])
 def secante_final():
-    func_str = request.form["func_str"]
-    x0 = float(request.form["x0"])
-    x1 = float(request.form["x1"])
-    tol = float(request.form["tol"])
-    max_iter = int(request.form["max_iter"])
-    x_min = float(request.form["x_min"])
-    x_max = float(request.form["x_max"])
+    try:
+        func_str = request.form["func_str"]
+        x0 = float(request.form["x0"])
+        x1 = float(request.form["x1"])
+        tol = float(request.form["tol"])
+        max_iter = int(request.form["max_iter"])
+        x_min = float(request.form["x_min"])
+        x_max = float(request.form["x_max"])
 
-    pdf_path = generar_pdf_secante(func_str, x0, x1, tol, max_iter, x_min, x_max)
-    return send_file(pdf_path, as_attachment=True)
+        # Validaciones básicas
+        if tol <= 0:
+            return "Error: La tolerancia debe ser mayor que 0", 400
+        if max_iter <= 0:
+            return "Error: El número máximo de iteraciones debe ser mayor que 0", 400
+
+        pdf_path = calcular_secante_y_generar_pdf(func_str, x0, x1, tol, max_iter, x_min, x_max)
+        return send_file(pdf_path, as_attachment=True)
+        
+    except Exception as e:
+        return f"Error al procesar la solicitud: {str(e)}", 500
 
 @app.route('/jacobi_inicio')
 def jacobi_inicio():
