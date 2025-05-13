@@ -276,6 +276,39 @@
 
       gtag('config', 'G-BEXLNFL26Y');
     </script>
+
+    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+    <script type="module">
+        import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+        createChat({
+            webhookUrl: 'https://mathxpert.app.n8n.cloud/webhook/1f7d390d-40ad-470d-be19-28d36f638070/chat',
+            webhookConfig: {
+                method: 'POST',
+                headers: {}
+            },
+            target: '#n8n-chat',
+            mode: 'window',
+            chatInputKey: 'chatInput',
+            chatSessionKey: 'sessionId',
+            metadata: {},
+            showWelcomeScreen: false,
+            defaultLanguage: 'en',
+            initialMessages: [
+                'Hola! 👋',
+                'Mi nombre es Mathi. Como puedo ayudarte hoy?'
+            ],
+            i18n: {
+                en: {
+                    title: 'Hola! 👋',
+                    subtitle: "Comienza un chat con Mathi. Esta aca para ayudarte 24/7.",
+                    footer: '',
+                    getStarted: 'Nueva conversacion',
+                    inputPlaceholder: 'Escribe tu pregunta..',
+                },
+            },
+        });
+    </script>
 </head>
 <body>
     <!-- Header -->
